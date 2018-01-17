@@ -284,24 +284,39 @@ public static int lsa(int machineNumber, int [] tasks){
 
 	
 	public static int myAlgo(int [] tab){
-		int tempsMyAlgo=0;
-                int[] tabCroissant;
-                int[] tabDecroissant;
-                int[] tabMyAlgo;
-            // On part d'un tableau non triée : tab 
-            //On la trie par ordre croissant : tabCroissant
-            tabCroissant = triBulleCroissant(tab); 
-            //On la trie par ordre décroissant : tabDecroissant
-            tabDecroissant = triBulleDecroissant(tab); 
-            
-            //On ajoute à un nouveau tableau : tabCroissant[0] + tabDecroissant[0] + tabCroissant[1] + tabDecroissant[1] +... et on s'arrete à tabCroissant[i/2]=tabDecroissant[i/2]. 
-            	
-            
-            
-            
-            
-		return tempsMyAlgo;
-	}
+		
+            int[] tabCroissant;
+            int[] tabDecroissant;
+            int[] tabMyAlgo = null;
+        // On part d'un tableau non triee : tab 
+        //On la trie par ordre croissant : tabCroissant
+        tabCroissant = triBulleCroissant(tab); 
+        //On la trie par ordre decroissant : tabDecroissant
+        tabDecroissant = triBulleDecroissant(tab); 
+        
+        //On ajoute a un nouveau tableau : tabCroissant[0] + tabDecroissant[0] + tabCroissant[1] + tabDecroissant[1] +... et on s'arrete à tabCroissant[i/2]=tabDecroissant[i/2]. 
+        	//on utilise lsa 
+        //Look over all the tasks.
+        //Find the machine the more available (that has the lowest duration)
+        //Adds the current task.
+        int longueur = 0 ; 
+        if(tab.length % 2 == 0) {
+        	longueur = tab.length/2; 
+        }
+        else {
+        	longueur = tab.length/2 +1;
+        }
+        
+        for (int i = 0; i < longueur ; i++) {
+            int availableMachineIndex = Utils.indexMin(tabMyAlgo);
+            tabMyAlgo[availableMachineIndex] += tabCroissant[i]+tabDecroissant[i];
+            System.out.println(tabMyAlgo[i]);
+        }
+        
+        //Returns the maximum duration.
+        return Utils.max(tabMyAlgo);            
+}
+	
 	
         public static int borneInfMaximum (int[] tab){
             int max= 0;
@@ -375,23 +390,31 @@ public static int lsa(int machineNumber, int [] tasks){
             }
             FileWriter fw = new FileWriter(nomFichier.getAbsoluteFile());
             BufferedWriter bw = new BufferedWriter(fw);
-            
+            String content = null;
              for (int i = 0; i<nombreInstances; i++){
-                String contentBorneInfMax = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
+            	 
+            	 content = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
+            	 content = content + "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks);
+            	 content = content + "Resultat LSA = " + lsa(machineNumber, tasks);
+            	 content = content + "Resultat LPT = " + lpt(machineNumber, tasks);
+            	 content = content + "Resultat myAlgo = ";
+            	 
+                /*String contentBorneInfMax = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
                 bw.write(contentBorneInfMax);
                 String contentBorneInfMoy = "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks);		
                 bw.write(contentBorneInfMoy);
                 
                 String contentResultatLSA = "Resultat LSA = " + lsa(machineNumber, tasks);
-		bw.write(contentResultatLSA);
+				bw.write(contentResultatLSA);
                 String contentResultatLPT = "Resultat LPT = " + lpt(machineNumber, tasks);
-		String contentResultatMyAlgo = "Resultat myAlgo = ";
+				String contentResultatMyAlgo = "Resultat myAlgo = ";*/
             }
-		//String contentRatioLSA = "ratio d’approximation moyen LSA = " + ratioApproxMoyenLSA();
+             	//String contentRatioLSA = "ratio d’approximation moyen LSA = " + ratioApproxMoyenLSA();
                 String contentRatioLPT = "ratio d’approximation moyen LPT = " + ratioApproxMoyenLPT();
                 String contentRatioMyAlgo = "ratio d’approximation moyen MyAlgo = " + ratioApproxMoyenMyAlgo();
                 
              // on ecrit dans le fichier
+             bw.write(content);
              //bw.write(contentRatioLSA);
              bw.write(contentRatioLPT);
              bw.write(contentRatioMyAlgo);
