@@ -8,11 +8,18 @@ import java.util.Random;
 import java.util.Scanner;
 
 import Algo.SelectionFichier;
+import Algo.Utils;
+
 
 public class ChoixModeSaisie {
 
 	public static void main(String[] args){
-		menu(); 
+	    /*// Below the same example as Cours3. It should return 15.
+            int machineNumber = 3;
+            int[] tasks = {2,7,1,3,2,6,2,3,6,2,5};
+            System.out.println("LSA: " + lsa(machineNumber, tasks));
+            */
+            menu(); 
 	}
 	
 	@SuppressWarnings("null")
@@ -158,66 +165,48 @@ public class ChoixModeSaisie {
 	}
 
 	
-	
-	public static int lsa(int [] taches){
-		int tempsAlgoLSA=0;
-		ArrayList < ArrayList<Integer> > listeMachines = new ArrayList < ArrayList<Integer> >(taches[0]);
-                int nombreMachines= taches[0];
-                
-                
-                for (int i =0; i<nombreMachines; i++){ 
-			for(int j=2;j<taches.length; j++ ){
-                             listeMachines.get(i).get(j); // avec i =0 et j = 0 : premiere taches de la première machine
-                             if(listeMachines.get(i).get(j)==null){
-                                 listeMachines.get(i).add(taches[j]);
-                             }
-                             else if(listeMachines.get(i).get(j)!=null){
-                                 listeMachines.get(i+1).add(taches[j]); 
-                             } 
-                        
-                        }
-			
-			
-		}
-		
- 	
-		return tempsAlgoLSA;
+	/**
+         * Computes the max duration using the LSA algorithm.
+         *
+         * @param   int machineNumber   The number of machines.
+         * @param   int tasks           The tasks
+         *
+         * @return  int The max duration.
+         */
+	public static int lsa(int machineNumber, int [] tasks){
+ 	    int duration = 0;
+            /*
+             * We'll store the current duration of each machine in an array.
+             * If we have 2 machines, the machine 0 will have its tasks at the
+             * index 0 of this array and the machine 1 at the index 1. Using
+             * this simple logic, we can easily store the current duration of
+             * every machine.
+             */
+            int[] machines = new int[machineNumber];
+
+            //Look over all the tasks.
+            //Find the machine the more available (that has the lowest duration)
+            //Adds the current task.
+            for (int i = 0; i < tasks.length; i++) {
+                int availableMachineIndex = Utils.indexMin(machines);
+                machines[availableMachineIndex] += tasks[i];
+            }
+            //Returns the maximum duration.
+            return Utils.max(machines);
 	}
-	
-	public static int lpt(int [] tab){
-		
-		int tempsAlgoLTP=0;
-		
-		ArrayList < ArrayList<Integer> > listeMachines = new ArrayList(tab[0]);
-		int nbTaches = tab[1];
-		// faire pareil mais en ayant trié les durées avant
-		for (int i = 2; i<tab.length ; i++){
-			
-		}
-		
-		/*Algorithme à implémenter dans un langage
-		Entrée : I : Ensemble contenant mes tâches à ordonnancés
-		n : nombre de tâches
-		ri, pi : respectivement date de disponibilité et durée de la tâche
-		Variables intermédiaires : S est un sous ensemble de I
-		k, i, Min, Max : entiers
-		Sorties : C*(I)
-		Début :
-		C*(∅)=0 
-		Pour k=1 à n 
-		Pour tout sous ensemble S de I contenant k éléments de I
-		C*(S)=∞
-		Pour tout élément i de S
-		Si C*(S-{i})<= ri alors Max=ri 
-		Sinon Max = C*(S-{i})	
-		Min=Max + pi
-		Si Min<C*(S)alors C*(S)=Min
-		Fin pour
-		Fin pour
-		Fin pour
-		Fin*/
-		
-		return tempsAlgoLTP;
+
+        
+	/**
+         * Computes the max duration using the LPT algorithm.
+         *
+         * @param   int machineNumber   The number of machines.
+         * @param   int tasks           The tasks
+         *
+         * @return  int The max duration.
+         */
+	public static int lpt(int machineNumbers, int [] tasks){
+		int[] orderedTasks = tasks; //TODO: Instead of just using tasks, ordered them in decreasing orrder
+                return lsa(machineNumbers, tasks);
 	}
 	
 	public static int myAlgo(){
