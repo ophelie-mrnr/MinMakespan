@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Scanner;
 import Algo.SelectionFichier;
 import Algo.Utils;
+import Structs.InstanceResult;
+import static Structs.InstanceResult.rIAverage;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
@@ -20,6 +22,8 @@ public class ChoixModeSaisie {
         System.out.println("LPT: " + lpt(machineNumber, tasks));*/
 
 		menu();
+                
+                //myAlgo(tasks);
 
 
 	}
@@ -110,7 +114,7 @@ public class ChoixModeSaisie {
 				System.exit(1);
 			}
 
-			//int[]
+			InstanceResult [] monTableauinstanceResult = new InstanceResult [nbrinstances]; 
 
 			for(int i = 0; i<nbrinstances; i++) { 
 				System.out.println("\nInstance "+ (i+1) +" : ");
@@ -129,8 +133,14 @@ public class ChoixModeSaisie {
 
 				int[] tab = tabElements;
 
-				lsa(nbrmachines,tab);
-				affichageResultatsIg(nbrinstances,nbrmachines, tab, bw); // changer de place                 
+				int algoResultLSA = lsa(nbrmachines,tab);
+	
+                             
+                                    InstanceResult instanceResult = new InstanceResult(borneInfMaximum(tab), borneInfMoyenne(nbrmachines, tab), algoResultLSA);
+                                    monTableauinstanceResult[i] = instanceResult;
+                                    float ratio = InstanceResult.rIAverage(monTableauinstanceResult);
+                                    affichageResultatsIg(nbrinstances,nbrmachines, tab, bw, ratio) ;
+                                
 			}
 			try {
 				bw.close();
@@ -138,6 +148,8 @@ public class ChoixModeSaisie {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+                        
+                        
 		}
 
 	}
@@ -311,7 +323,7 @@ public class ChoixModeSaisie {
 
 		int[] tabCroissant;
 		int[] tabDecroissant;
-		int[] tabMyAlgo = null;
+		int[] tabResultMyAlgo = null;
 		// On part d'un tableau non triee : tab 
 		//On la trie par ordre croissant : tabCroissant
 		tabCroissant = triBulleCroissant(tab); 
@@ -324,21 +336,34 @@ public class ChoixModeSaisie {
 		//Find the machine the more available (that has the lowest duration)
 		//Adds the current task.
 		int longueur = 0 ; 
-		if(tab.length % 2 == 0) {
-			longueur = tab.length/2; 
-		}
-		else {
-			longueur = tab.length/2 +1;
-		}
+		
 
-		for (int i = 0; i < longueur ; i++) {
-			int availableMachineIndex = Utils.indexMin(tabMyAlgo);
-			tabMyAlgo[availableMachineIndex] += tabCroissant[i]+tabDecroissant[i];
-			System.out.println(tabMyAlgo[i]);
+		for (int i = 0; i < tabResultMyAlgo.length ; i++) {
+                    if(tab.length % 2 == 0) {
+			for(int j=0; j<tabCroissant.length/2; j++){
+                            for(int y=0; y<tabDecroissant.length/2; y++){
+                            int availableMachineIndex = Utils.indexMin(tabResultMyAlgo);
+                            tabResultMyAlgo[availableMachineIndex] += tabCroissant[j]+tabDecroissant[y];
+                            System.out.println(tabResultMyAlgo[i]);
+                            }
+                        }
+                    }   
+                    else {
+			for(int j=0; j<tabCroissant.length/2 +1; j++){
+                            for(int y=0; y<tabDecroissant.length/2-1; y++){
+                                int availableMachineIndex = Utils.indexMin(tabResultMyAlgo);
+                            tabResultMyAlgo[availableMachineIndex] += tabCroissant[j]+tabDecroissant[y];
+                            System.out.println(tabResultMyAlgo[i]);
+                            }
+                        }
+		}
+			
+                        
+                 
 		}
 
 		//Returns the maximum duration.
-		return Utils.max(tabMyAlgo);            
+		return Utils.max(tabResultMyAlgo);            
 	}
 
 
@@ -374,13 +399,13 @@ public class ChoixModeSaisie {
 		System.out.println("Resultat myAlgo = ");
 	}
 
-	public static float ratioApproxMoyenLSA(int [] n){
+	/*public static float ratioApproxMoyenLSA(int [] n){
 		float ratio=0;
 
 
-		/*for (int i =0; i<n; i++){
+		for (int i =0; i<n; i++){
 
-		}*/
+		
 
 		// pour chaque instance I, on prend le maximum entre la borne inférieure “maximum” et la borne inférieure“moyenne”. Appelons ce maximum M I .
 
@@ -399,49 +424,35 @@ public class ChoixModeSaisie {
 		float ratio=0;
 
 		return ratio;
-	}
+	}*/
 
 
-	public static void affichageResultatsIg(int nombreInstances, int machineNumber, int [] tasks , BufferedWriter bw){
+	public static void affichageResultatsIg(int nombreInstances, int machineNumber, int [] tasks , BufferedWriter bw, float ratio){
 
 		try {
 
-			// creer le fichier s'il n'existe pas
-			/* if (!fichier.exists()) {
-            	fichier.createNewFile();
-            }*/
-			//FileWriter fw = new FileWriter(fichier, true);
-			//BufferedWriter bw = new BufferedWriter(fw);
 			String content = "";
+                        String separator = "==================================================";
 			for (int i = 0; i<nombreInstances; i++){
 
-				content += "Borne inferieure 'maximum' = " + borneInfMaximum(tasks) +"\n";
-				content += "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks)+"\n";
-				content += "Resultat LSA = " + lsa(machineNumber, tasks)+"\n";
-				content += "Resultat LPT = " + lpt(machineNumber, tasks)+"\n";
-				content += "Resultat myAlgo = ";
-
-				/*String contentBorneInfMax = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
-                bw.write(contentBorneInfMax);
-                String contentBorneInfMoy = "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks);		
-                bw.write(contentBorneInfMoy);
-
-                String contentResultatLSA = "Resultat LSA = " + lsa(machineNumber, tasks);
-				bw.write(contentResultatLSA);
-                String contentResultatLPT = "Resultat LPT = " + lpt(machineNumber, tasks);
-				String contentResultatMyAlgo = "Resultat myAlgo = ";*/
+				content += "Borne inferieure 'maximum' = " + borneInfMaximum(tasks) +"\n"+ separator +"\n";
+				content += "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks)+"\n"+ separator +"\n";
+				content += "Resultat LSA = " + lsa(machineNumber, tasks)+"\n"+ separator +"\n";
+				content += "Resultat LPT = " + lpt(machineNumber, tasks)+"\n"+ separator +"\n";
+				content += "Resultat myAlgo = " +"\n"+ separator +"\n";				
 			}
-			//String contentRatioLSA = "ratio d’approximation moyen LSA = " + ratioApproxMoyenLSA();
-			String contentRatioLPT = "ratio d’approximation moyen LPT = " + ratioApproxMoyenLPT();
-			String contentRatioMyAlgo = "ratio d’approximation moyen MyAlgo = " + ratioApproxMoyenMyAlgo();
+                        
+			String contentRatioLSA = "ratio d’approximation moyen LSA = " +  ratio +"\n";
+			String contentRatioLPT = "ratio d’approximation moyen LPT = " + ratio +"\n";
+			String contentRatioMyAlgo = "ratio d’approximation moyen MyAlgo = " +  ratio +"\n";
 
 			// on ecrit dans le fichier
 			bw.write(content);
-			//bw.write(contentRatioLSA);
+			bw.write(contentRatioLSA);
 			bw.write(contentRatioLPT);
 			bw.write(contentRatioMyAlgo);
 
-			System.out.println("Modification terminee!");
+			System.out.println("Modification du fichier terminee!");
 
 		} catch (IOException e) {
 			e.printStackTrace();
