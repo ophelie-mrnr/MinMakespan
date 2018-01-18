@@ -14,63 +14,63 @@ public class ChoixModeSaisie {
 
 	public static void main(String[] args){
 		// Below the same example as Cours3. It should return 15.
-        //int machineNumber = 3;
-        //int[] tasks = {2,7,1,3,2,6,2,3,6,2,5};
-        /*System.out.println("LSA: " + lsa(machineNumber, tasks));
+		//int machineNumber = 3;
+		//int[] tasks = {2,7,1,3,2,6,2,3,6,2,5};
+		/*System.out.println("LSA: " + lsa(machineNumber, tasks));
         System.out.println("LPT: " + lpt(machineNumber, tasks));*/
-        
+
 		menu();
-                
-              
+
+
 	}
-	
+
 	@SuppressWarnings("null")
 	public static void menu() {
 		Scanner sc = new Scanner(System.in);
 		int mode = -1; 	
 		do {
-		System.out.println("Veuillez choisir votre mode de saisie : ");
-		System.out.println("1 : Depuis un fichier (If)" );
-		System.out.println("2 : Au clavier (Ic)");
-		System.out.println("3 : Generation aleatoire (Ig)");
-		
-		mode =scannerGetNextInt(sc);
+			System.out.println("Veuillez choisir votre mode de saisie : ");
+			System.out.println("1 : Depuis un fichier (If)" );
+			System.out.println("2 : Au clavier (Ic)");
+			System.out.println("3 : Generation aleatoire (Ig)");
+
+			mode =scannerGetNextInt(sc);
 		}
 		while (mode !=1 && mode !=2 && mode !=3);
-		
+
 		if(mode==1) {
 			System.out.println("Choix 1");
 			System.out.println("Creation d'instance If");
-			
+
 			mode1();
-			 
-			
-			
+
+
+
 		}
 		else if(mode==2) {	
 			System.out.println("Choix 2");
 			System.out.println("Creation d'instance Ic");
-		    
+
 			String line;
-			  
-		    System.out.println("Entrez le nombre de machines m, le nombre de taches n et les durees di de chaque tache sous la forme suivante : "
-		    		+ "m:n:d1:d2:...:dn");
-		    line=sc.next();
-		    
-				System.out.println(line);
-				String[] s = line.split(":"); // on coupe les durees de part les ":" 
-				int[] tabElements = new int[s.length]; //tableau des taches
-				tabElements[0] = Integer.parseInt(s[0]);
-				tabElements[1] = Integer.parseInt(s[1]);
-				System.out.println("nb machines = " +tabElements[0] + "\nnb taches =" +tabElements[1] );
-				for(int i =2;i<s.length;i++) { 
-					tabElements[i] = Integer.parseInt(s[i]);		//tabElements[i] liste des valeurs des taches 
-					System.out.println( "les durees = " +tabElements[i]);
-					
-				}
-                            int[] tab = null;
-                                tab=recuperationDurees(tabElements);
-                                lsa(tabElements[0],tab);
+
+			System.out.println("Entrez le nombre de machines m, le nombre de taches n et les durees di de chaque tache sous la forme suivante : "
+					+ "m:n:d1:d2:...:dn");
+			line=sc.next();
+
+			System.out.println(line);
+			String[] s = line.split(":"); // on coupe les durees de part les ":" 
+			int[] tabElements = new int[s.length]; //tableau des taches
+			tabElements[0] = Integer.parseInt(s[0]);
+			tabElements[1] = Integer.parseInt(s[1]);
+			System.out.println("nb machines = " +tabElements[0] + "\nnb taches =" +tabElements[1] );
+			for(int i =2;i<s.length;i++) { 
+				tabElements[i] = Integer.parseInt(s[i]);		//tabElements[i] liste des valeurs des taches 
+				System.out.println( "les durees = " +tabElements[i]);
+
+			}
+			int[] tab = null;
+			tab=recuperationDurees(tabElements);
+			lsa(tabElements[0],tab);
 			affichageResultatsIfIc(tabElements[0],tab);
 		}
 		else{
@@ -81,7 +81,7 @@ public class ChoixModeSaisie {
 			int nbrinstances = -1;
 			int dureesmin = -1;
 			int dureesmax = -1;
-			 
+
 			System.out.println("Veuillez choisir le nombre d'instances k a produire : ");
 			nbrinstances=scannerGetNextInt(sc);
 			System.out.println("Choisir le nombre de machines m : ");
@@ -92,43 +92,67 @@ public class ChoixModeSaisie {
 			dureesmin=scannerGetNextInt(sc);			
 			System.out.println("Choisir la duree maximale : ");
 			dureesmax=scannerGetNextInt(sc);			
-			
-			
+			System.out.println("Choisir le fichier ou ecrire : ");
+			File nomFichier = SelectionFichier.choixFichier();	
+
 			System.out.println("Pour chaque instance, voici la liste produite de la forme m:n:d1:d2:...:dn ");
-			for(int i = 0; i<nbrinstances; i++) { //fonctionne mais pas le nombre taches avec valeurs randoms 
+
+
+			FileWriter fw = null;
+			BufferedWriter bw = null;
+			try {
+				fw = new FileWriter(nomFichier, true);
+				bw = new BufferedWriter(fw);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				System.out.println("Erreur d'ecriture");
+				System.exit(1);
+			}
+
+			//int[]
+
+			for(int i = 0; i<nbrinstances; i++) { 
 				System.out.println("\nInstance "+ (i+1) +" : ");
-				int[] tabElements = new int[nbrtaches+2] ;
-				tabElements[0]=nbrmachines; //fonctionne
-				tabElements[1]=nbrtaches; //fonctionne 
-					
-                                for(int j=0; j<nbrtaches; j++) {
-                                        int r =(int)( Math.random()*( dureesmax - dureesmin + 1 ) ) + dureesmin;					        
-                                        tabElements[j+2]= r;                    
+				int[] tabElements = new int[nbrtaches] ;
+				System.out.print(nbrmachines + ":" + nbrtaches + ":");
+
+				for(int j=0; j<nbrtaches; j++) {
+					int r =(int)( Math.random()*( dureesmax - dureesmin + 1 ) ) + dureesmin;					        
+					tabElements[j]= r; 
+					if (j<nbrtaches-1){
+						System.out.print(r + ":");
+					}
+					else
+						System.out.println(r);
 				}
 
-                                     for(int y=0; y<tabElements.length; y++) {   
-                                        System.out.print(tabElements[y] + ":");
-                                     }
-                                     int[] tab = null;
-                                tab=recuperationDurees(tabElements);
-                                lsa(tabElements[0],tab);
-					affichageResultatsIg(nbrinstances,tabElements[0],tab);
-		}
-	}
+				int[] tab = tabElements;
 
-}
+				lsa(nbrmachines,tab);
+				affichageResultatsIg(nbrinstances,nbrmachines, tab, bw); // changer de place                 
+			}
+			try {
+				bw.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+	}
 	private static int scannerGetNextInt(Scanner sc) {
 		while(sc.hasNextInt()==false) {
 			System.out.println("Entrez un entier s'il vous plait");
 			sc.nextLine();
 		}
-		
+
 		return sc.nextInt();
 	}
-	
+
 	public static void mode1(){
 		File nomFichier = SelectionFichier.choixFichier();		
-		
+
 		BufferedReader r = null;
 		try {
 			r = new BufferedReader(new FileReader(nomFichier));
@@ -149,16 +173,16 @@ public class ChoixModeSaisie {
 
 					tabElements[i] = Integer.parseInt(s[i]);		//tabElements[i] liste des valeurs des taches 
 					System.out.println( "les durees = " +tabElements[i]);
-					
+
 				}
-                                int[] newTab = null;
-                                newTab=recuperationDurees(tabElements);                                                     
-                                lsa(tabElements[0],newTab);
-                                affichageResultatsIfIc(tabElements[0], newTab);
+				int[] newTab = null;
+				newTab=recuperationDurees(tabElements);                                                     
+				lsa(tabElements[0],newTab);
+				affichageResultatsIfIc(tabElements[0], newTab);
 			}
-                                
-                        
-                        
+
+
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -171,56 +195,56 @@ public class ChoixModeSaisie {
 		}	
 	}
 
-        
-        public static int[] recuperationDurees (int [] instance){
-            
-            int [] tabDurees = new int[instance.length];
-            for (int i = 2; i<instance.length; i++){
-                tabDurees[i]=instance[i];
-            }
-            //System.out.println(tabDurees);int machineNumber
-            return tabDurees;
-        }
-        
-	
+
+	public static int[] recuperationDurees (int [] instance){
+
+		int [] tabDurees = new int[instance.length];
+		for (int i = 2; i<instance.length; i++){
+			tabDurees[i]=instance[i];
+		}
+		//System.out.println(tabDurees);int machineNumber
+		return tabDurees;
+	}
+
+
 	/**
-     * Computes the max duration using the LSA algorithm.
-     *
-     * @param   int machineNumber   The number of machines.
-     * @param   int tasks           The tasks
-     *
-     * @return  int The max duration.
-     */
-public static int lsa(int machineNumber, int [] tasks){
-	    int duration = 0;
-        /*
-         * We'll store the current duration of each machine in an array.
-         * If we have 2 machines, the machine 0 will have its tasks at the
-         * index 0 of this array and the machine 1 at the index 1. Using
-         * this simple logic, we can easily store the current duration of
-         * every machine.
-         */
-        int[] machines = new int[machineNumber];
+	 * Computes the max duration using the LSA algorithm.
+	 *
+	 * @param   int machineNumber   The number of machines.
+	 * @param   int tasks           The tasks
+	 *
+	 * @return  int The max duration.
+	 */
+	public static int lsa(int machineNumber, int [] tasks){
+		int duration = 0;
+		/*
+		 * We'll store the current duration of each machine in an array.
+		 * If we have 2 machines, the machine 0 will have its tasks at the
+		 * index 0 of this array and the machine 1 at the index 1. Using
+		 * this simple logic, we can easily store the current duration of
+		 * every machine.
+		 */
+		int[] machines = new int[machineNumber];
 
-        //Look over all the tasks.
-        //Find the machine the more available (that has the lowest duration)
-        //Adds the current task.
-        for (int i = 0; i < tasks.length; i++) {
-            int availableMachineIndex = Utils.indexMin(machines);
-            machines[availableMachineIndex] += tasks[i];
-        }
-        //Returns the maximum duration.
-        return Utils.max(machines);
-}
+		//Look over all the tasks.
+		//Find the machine the more available (that has the lowest duration)
+		//Adds the current task.
+		for (int i = 0; i < tasks.length; i++) {
+			int availableMachineIndex = Utils.indexMin(machines);
+			machines[availableMachineIndex] += tasks[i];
+		}
+		//Returns the maximum duration.
+		return Utils.max(machines);
+	}
 
-	
 
-    public static int[] triBulleDecroissant(int tableau[]) {
-               // int [] tableauTrie=null;
+
+	public static int[] triBulleDecroissant(int tableau[]) {
+		// int [] tableauTrie=null;
 		int longueur = tableau.length;
 		int tampon = 0;
 		boolean permut;
- 
+
 		do {
 			// hypothèse : le tableau est trié
 			permut = false;
@@ -233,18 +257,18 @@ public static int lsa(int machineNumber, int [] tasks){
 					tableau[i + 1] = tampon;
 					permut = true;
 				}
-                                //tableauTrie= tableau;
+				//tableauTrie= tableau;
 			}
 		} while (permut);
-                return tableau;
-}
+		return tableau;
+	}
 
-    
-    public static int[] triBulleCroissant(int tableau[]) {
+
+	public static int[] triBulleCroissant(int tableau[]) {
 		int longueur = tableau.length;
 		int tampon = 0;
 		boolean permut;
- 
+
 		do {
 			// hypothèse : le tableau est trié
 			permut = false;
@@ -259,88 +283,88 @@ public static int lsa(int machineNumber, int [] tasks){
 				}
 			}
 		} while (permut);
-                return tableau;
+		return tableau;
 	}
-    
-    
-    
+
+
+
 
 	/**
-     * Computes the max duration using the LPT algorithm.
-     *
-     * @param   int machineNumber   The number of machines.
-     * @param   int tasks           The tasks
-     *
-     * @return  int The max duration.
-     */
-        public static int lpt(int machineNumber, int [] tasks){
+	 * Computes the max duration using the LPT algorithm.
+	 *
+	 * @param   int machineNumber   The number of machines.
+	 * @param   int tasks           The tasks
+	 *
+	 * @return  int The max duration.
+	 */
+	public static int lpt(int machineNumber, int [] tasks){
 
-                   // order tasks in decreasing order
-                    int [] tableauTrie = triBulleDecroissant(tasks);
+		// order tasks in decreasing order
+		int [] tableauTrie = triBulleDecroissant(tasks);
 
-                   return lsa(machineNumber, tableauTrie);
-        }
+		return lsa(machineNumber, tableauTrie);
+	}
 
 
-	
+
 	public static int myAlgo(int [] tab){
-		
-            int[] tabCroissant;
-            int[] tabDecroissant;
-            int[] tabMyAlgo = null;
-        // On part d'un tableau non triee : tab 
-        //On la trie par ordre croissant : tabCroissant
-        tabCroissant = triBulleCroissant(tab); 
-        //On la trie par ordre decroissant : tabDecroissant
-        tabDecroissant = triBulleDecroissant(tab); 
-        
-        //On ajoute a un nouveau tableau : tabCroissant[0] + tabDecroissant[0] + tabCroissant[1] + tabDecroissant[1] +... et on s'arrete à tabCroissant[i/2]=tabDecroissant[i/2]. 
-        	//on utilise lsa 
-        //Look over all the tasks.
-        //Find the machine the more available (that has the lowest duration)
-        //Adds the current task.
-        int longueur = 0 ; 
-        if(tab.length % 2 == 0) {
-        	longueur = tab.length/2; 
-        }
-        else {
-        	longueur = tab.length/2 +1;
-        }
-        
-        for (int i = 0; i < longueur ; i++) {
-            int availableMachineIndex = Utils.indexMin(tabMyAlgo);
-            tabMyAlgo[availableMachineIndex] += tabCroissant[i]+tabDecroissant[i];
-            System.out.println(tabMyAlgo[i]);
-        }
-        
-        //Returns the maximum duration.
-        return Utils.max(tabMyAlgo);            
-}
-	
-	
-        public static int borneInfMaximum (int[] tab){
-            int max= 0;
-            
-            for (int i = 0; i<tab.length; i++){
-                if(tab[i]>max){
-                    max = tab[i]; 
-                }
-            }
-            return max;
-        }
-        
-        
-        public static int borneInfMoyenne (int machineNumber, int[] tab ){
-            int moy = 0;
-            int sum = 0 ; 
-            for(int i = 0; i<tab.length; i++){
-                sum += tab[i]; 
-            }
-            moy = sum/machineNumber; 
-            return moy; 
-        }
-        
-	
+
+		int[] tabCroissant;
+		int[] tabDecroissant;
+		int[] tabMyAlgo = null;
+		// On part d'un tableau non triee : tab 
+		//On la trie par ordre croissant : tabCroissant
+		tabCroissant = triBulleCroissant(tab); 
+		//On la trie par ordre decroissant : tabDecroissant
+		tabDecroissant = triBulleDecroissant(tab); 
+
+		//On ajoute a un nouveau tableau : tabCroissant[0] + tabDecroissant[0] + tabCroissant[1] + tabDecroissant[1] +... et on s'arrete à tabCroissant[i/2]=tabDecroissant[i/2]. 
+		//on utilise lsa 
+		//Look over all the tasks.
+		//Find the machine the more available (that has the lowest duration)
+		//Adds the current task.
+		int longueur = 0 ; 
+		if(tab.length % 2 == 0) {
+			longueur = tab.length/2; 
+		}
+		else {
+			longueur = tab.length/2 +1;
+		}
+
+		for (int i = 0; i < longueur ; i++) {
+			int availableMachineIndex = Utils.indexMin(tabMyAlgo);
+			tabMyAlgo[availableMachineIndex] += tabCroissant[i]+tabDecroissant[i];
+			System.out.println(tabMyAlgo[i]);
+		}
+
+		//Returns the maximum duration.
+		return Utils.max(tabMyAlgo);            
+	}
+
+
+	public static int borneInfMaximum (int[] tab){
+		int max= 0;
+
+		for (int i = 0; i<tab.length; i++){
+			if(tab[i]>max){
+				max = tab[i]; 
+			}
+		}
+		return max;
+	}
+
+
+	public static int borneInfMoyenne (int machineNumber, int[] tab ){
+		int moy = 0;
+		int sum = 0 ; 
+		for(int i = 0; i<tab.length; i++){
+			sum += tab[i]; 
+		}
+		moy = sum/machineNumber; 
+		return moy; 
+	}
+
+
 	public static void affichageResultatsIfIc( int machineNumber, int [] tasks ){
 		System.out.println("Voici les resultats des calculs : " );
 		System.out.println("Borne inferieure 'maximum' = " + borneInfMaximum(tasks));
@@ -349,87 +373,83 @@ public static int lsa(int machineNumber, int [] tasks){
 		System.out.println("Resultat LPT = " + lpt(machineNumber, tasks));
 		System.out.println("Resultat myAlgo = ");
 	}
-	
-	public static float ratioApproxMoyenLSA(int n){
-            float ratio=0;
-            
-            
-            for (int i =0; i<n; i++){
-                
-            }
-            
-            // pour chaque instance I, on prend le maximum entre la borne inférieure “maximum” et la borne inférieure“moyenne”. Appelons ce maximum M I .
-            
-            
-            
-            return ratio;
-        }
-        
-        public static float ratioApproxMoyenLPT(){
-            float ratio=0;
-            
-            return ratio;
-        }
-        
-        public static float ratioApproxMoyenMyAlgo(){
-            float ratio=0;
-            
-            return ratio;
-        }
-        
-        
-	public static void affichageResultatsIg(int nombreInstances, int machineNumber, int [] tasks ){
-            
-            File nomFichier = SelectionFichier.choixFichier();
-            
-            try {
-          
-            // creer le fichier s'il n'existe pas
-            if (!nomFichier.exists()) {
-             nomFichier.createNewFile();
-            }
-            FileWriter fw = new FileWriter(nomFichier.getAbsoluteFile());
-            BufferedWriter bw = new BufferedWriter(fw);
-            String content = null;
-             for (int i = 0; i<nombreInstances; i++){
-            	 
-            	 content = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
-            	 content = content + "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks);
-            	 content = content + "Resultat LSA = " + lsa(machineNumber, tasks);
-            	 content = content + "Resultat LPT = " + lpt(machineNumber, tasks);
-            	 content = content + "Resultat myAlgo = ";
-            	 
-                /*String contentBorneInfMax = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
+
+	public static float ratioApproxMoyenLSA(int [] n){
+		float ratio=0;
+
+
+		/*for (int i =0; i<n; i++){
+
+		}*/
+
+		// pour chaque instance I, on prend le maximum entre la borne inférieure “maximum” et la borne inférieure“moyenne”. Appelons ce maximum M I .
+
+
+
+		return ratio;
+	}
+
+	public static float ratioApproxMoyenLPT(){
+		float ratio=0;
+
+		return ratio;
+	}
+
+	public static float ratioApproxMoyenMyAlgo(){
+		float ratio=0;
+
+		return ratio;
+	}
+
+
+	public static void affichageResultatsIg(int nombreInstances, int machineNumber, int [] tasks , BufferedWriter bw){
+
+		try {
+
+			// creer le fichier s'il n'existe pas
+			/* if (!fichier.exists()) {
+            	fichier.createNewFile();
+            }*/
+			//FileWriter fw = new FileWriter(fichier, true);
+			//BufferedWriter bw = new BufferedWriter(fw);
+			String content = "";
+			for (int i = 0; i<nombreInstances; i++){
+
+				content += "Borne inferieure 'maximum' = " + borneInfMaximum(tasks) +"\n";
+				content += "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks)+"\n";
+				content += "Resultat LSA = " + lsa(machineNumber, tasks)+"\n";
+				content += "Resultat LPT = " + lpt(machineNumber, tasks)+"\n";
+				content += "Resultat myAlgo = ";
+
+				/*String contentBorneInfMax = "Borne inferieure 'maximum' = " + borneInfMaximum(tasks);
                 bw.write(contentBorneInfMax);
                 String contentBorneInfMoy = "Borne inferieure 'moyenne' = " + borneInfMoyenne(machineNumber, tasks);		
                 bw.write(contentBorneInfMoy);
-                
+
                 String contentResultatLSA = "Resultat LSA = " + lsa(machineNumber, tasks);
 				bw.write(contentResultatLSA);
                 String contentResultatLPT = "Resultat LPT = " + lpt(machineNumber, tasks);
 				String contentResultatMyAlgo = "Resultat myAlgo = ";*/
-            }
-             	//String contentRatioLSA = "ratio d’approximation moyen LSA = " + ratioApproxMoyenLSA();
-                String contentRatioLPT = "ratio d’approximation moyen LPT = " + ratioApproxMoyenLPT();
-                String contentRatioMyAlgo = "ratio d’approximation moyen MyAlgo = " + ratioApproxMoyenMyAlgo();
-                
-             // on ecrit dans le fichier
-             bw.write(content);
-             //bw.write(contentRatioLSA);
-             bw.write(contentRatioLPT);
-             bw.write(contentRatioMyAlgo);
-               
-            bw.close();
+			}
+			//String contentRatioLSA = "ratio d’approximation moyen LSA = " + ratioApproxMoyenLSA();
+			String contentRatioLPT = "ratio d’approximation moyen LPT = " + ratioApproxMoyenLPT();
+			String contentRatioMyAlgo = "ratio d’approximation moyen MyAlgo = " + ratioApproxMoyenMyAlgo();
 
-            System.out.println("Modification terminee!");
+			// on ecrit dans le fichier
+			bw.write(content);
+			//bw.write(contentRatioLSA);
+			bw.write(contentRatioLPT);
+			bw.write(contentRatioMyAlgo);
 
-           } catch (IOException e) {
-            e.printStackTrace();
-           }
- 
-           
-	
+			System.out.println("Modification terminee!");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+
 	}
-	
-	
+
+
 }
